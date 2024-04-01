@@ -30,8 +30,7 @@ def college_login(request):
         password = request.data.get('password')
         user = User.objects.get(username=username, password=password)
         if user:
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'message': 'Login successful', 'user': UserSerializer(user).data, 'token':token.key}, status=status.HTTP_200_OK)
+            return Response({'message': 'Login successful', 'user': UserSerializer(user).data}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
@@ -61,8 +60,7 @@ def faculty_login(request):
         password = request.data.get('password')
         user = Faculty.objects.get(username=username, password=password)
         if user:
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'message': 'Login successful', 'user': UserSerializer(user).data, 'token':token.key}, status=status.HTTP_200_OK)
+            return Response({'message': 'Login successful', 'user': UserSerializer(user).data}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
@@ -100,8 +98,7 @@ def Student_login(request):
             print(password)
             user = Student.objects.get(username=username, password=password)
             if user:
-                token, created = Token.objects.get_or_create(user=user)
-                return Response({'message': 'Login successful', 'user': UserSerializer(user).data, 'token':token.key}, status=status.HTTP_200_OK)
+                return Response({'message': 'Login successful', 'user': UserSerializer(user).data}, status=status.HTTP_200_OK)
             else:
                 return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
@@ -132,24 +129,23 @@ def upload_faculty_profile_data(request):
 @api_view(['GET'])
 @csrf_exempt
 def get_faculty_profile_data(request, pk):
-    if request.user.is_authenticated:
-        try:
-            # user_id = request.user.id
-            faculty_profile = Faculty_Profile.objects.get(id=pk)
-            serializer = FacultyProfileSerializer(faculty_profile)
-            return Response(serializer.data)
-        
-        except Faculty_Profile.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+    # if request.user.is_authenticated:
+    try:
+        faculty_profile = Faculty_Profile.objects.get(id=pk)
+        serializer = FacultyProfileSerializer(faculty_profile)
+        return Response(serializer.data)
+    
+    except Faculty_Profile.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    else:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # else:
+    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
     
 
 
 # creating a update api for faculty_profile
 @api_view(['PATCH'])
-@csrf_protect
+@csrf_exempt
 def update_faculty_profile(request, pk):
     if request.user.is_authenticated:
         try:

@@ -3,7 +3,7 @@ from django.db import models
 
 
 # model for college
-class User(models.Model):
+class College(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password= models.CharField(max_length=100)

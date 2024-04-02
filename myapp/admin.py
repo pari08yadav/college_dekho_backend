@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import User, Faculty, Student, Faculty_Profile, College_Profile, Subject_Teacher
+from .models import College, Faculty, Student, Faculty_Profile, College_Profile, Subject_Teacher
 
 
 
 # admin for colleges
-@admin.register(User)
-class UserModelAdmin(admin.ModelAdmin):
+@admin.register(College)
+class CollegeModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'username', 'email', 'password']
     
 

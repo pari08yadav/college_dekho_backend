@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from myapp.pagination import CustomPagination
-
+from django.contrib.auth.hashers import make_password
 
 
 
@@ -14,6 +14,11 @@ from myapp.pagination import CustomPagination
 @api_view(['POST'])
 @csrf_exempt
 def faculty_signup(request):
+    request.data._mutable = True   #with thid code queryset converted into mutable form
+    data = request.data    #storing all sended data in data variable
+    hashed_password = make_password(data.get('password'))  # hashing password
+    data['password'] = hashed_password         #updating old password with hashed password
+    
     serializer = FacultySerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()

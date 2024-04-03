@@ -13,7 +13,7 @@ from django.contrib.auth.hashers import make_password
 @api_view(['POST'])
 @csrf_exempt
 def college_signup(request): 
-    request.data._mutable = True   #with thid code queryset converted into mutable form
+    request.data._mutable = True   #with this code queryset converted into mutable form
     data = request.data    #storing all sended data in data variable
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password

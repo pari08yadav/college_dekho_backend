@@ -36,5 +36,5 @@ class SubjectTeacherModelAdmin(admin.ModelAdmin):
 # admin for college_profile 
 @admin.register(College_Profile)
 class CollegeProfileModelAdmin(admin.ModelAdmin):
-    list_display = ['college_id', 'college_name', 'logo', 'college_image', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population']
+    list_display = ['college_id', 'college_name', 'logo', 'images', 'description', 'location', 'established_date', 'website', 'student_population', 'faculty_population']
     

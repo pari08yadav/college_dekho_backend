@@ -1,5 +1,5 @@
 from django.db import models
-
+from cloudinary.models import CloudinaryField
 
 
 # model for college
@@ -30,6 +30,7 @@ class Faculty_Profile(models.Model):
     skills = models.TextField(max_length=1500)
     experience = models.TextField(max_length=1500)
     picture = models.ImageField(upload_to='profile_pictures/')
+    # avtar_url = models.URLField(blank=True)
     # username = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     
     
@@ -38,7 +39,7 @@ class College_Profile(models.Model):
     college_id = models.AutoField
     college_name = models.CharField(max_length=100)
     logo = models.ImageField(upload_to='logo_images/', default="Image not found")
-    college_image = models.ImageField(upload_to='college_images/', default="Image not found")
+    images = models.ImageField(upload_to='college_images/', default="Image not found")
     description = models.TextField(max_length=1500)
     location = models.TextField(max_length=1000)
     established_date = models.DateField()

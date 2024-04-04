@@ -147,5 +147,5 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'xHM61QL9XbCaiasOofzEQUt8a5Q',
 }
 
-MEDIA_URL = '/college_images/'
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

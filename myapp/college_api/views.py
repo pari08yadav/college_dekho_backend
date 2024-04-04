@@ -22,7 +22,7 @@ def college_signup(request):
     serializer = CollegeSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -77,7 +77,7 @@ def create_college_profile(request):
                 # uploading college image to cloudinary
                 upload_logo = upload(logo)
                 
-                # fetching url of college image from cloudinary response
+                # fetching url of college image from cloudinary response and store it in database
                 item.logo = upload_logo.get('secure_url')
                 
         except College_Profile.DoesNotExist:
@@ -86,7 +86,7 @@ def create_college_profile(request):
         # saving serializer.data to database
         item.save()
         
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
         
         
         

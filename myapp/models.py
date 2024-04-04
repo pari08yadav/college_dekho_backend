@@ -29,8 +29,10 @@ class Faculty_Profile(models.Model):
     name = models.CharField(max_length=100)
     skills = models.TextField(max_length=1500)
     experience = models.TextField(max_length=1500)
-    picture = models.ImageField(upload_to='profile_pictures/')
-    # avtar_url = models.URLField(blank=True)
+    avtar = models.ImageField(upload_to='profile_pictures/', default="profile pic not found")
+    qualification = models.TextField(max_length=2000, default="")
+    about = models.TextField(max_length=2000, default="")
+    
     # username = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     
     
@@ -46,6 +48,18 @@ class College_Profile(models.Model):
     website = models.URLField()
     student_population = models.PositiveIntegerField()
     faculty_population = models.PositiveIntegerField()
+    affiliated_by = models.TextField(max_length=500, null=False)
+    
+    # giving choices
+    my_choices = [
+        ('IT', 'IT'),
+        ('Non-IT', 'Non-IT'),
+        ("Both", 'Both'),
+        ('Others','Others')
+    ]
+    college_type = models.CharField(max_length=50, choices=my_choices, default="")
+    college_code = models.CharField(max_length=50, null=False)
+    
     
 
 

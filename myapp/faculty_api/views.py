@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
+from django.core.mail import send_mail
 
 
 
@@ -15,6 +16,7 @@ from cloudinary.uploader import upload
 @api_view(['POST'])
 @csrf_exempt
 def faculty_signup(request):
+    user_email = request.data.get('email')     #fetching user email.
     request.data._mutable = True   #with thid code queryset converted into mutable form
     data = request.data    #storing all sended data in data variable
     hashed_password = make_password(data.get('password'))  # hashing password
@@ -23,6 +25,16 @@ def faculty_signup(request):
     serializer = FacultySerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
+        if serializer.save():
+            # Compose email message
+          subject = 'Welcome to Our Platform!'
+          body = 'Thank you for signing up. We are excited to have you on board!'
+          sender_email = 'yadav.parishram@gmail.com'  # Replace with your sender email address
+          recipient_email = user_email
+
+          # Send email
+          send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
+          
         return Response({"message":"Your signup is done successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

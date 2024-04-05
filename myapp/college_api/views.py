@@ -35,8 +35,6 @@ def college_signup(request):
           # Send email
           send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
           
-        else:
-            return "your data is not saved in database..."
     
         return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

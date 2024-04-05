@@ -31,7 +31,7 @@ def college_signup(request):
           body = 'Thank you for signing up. We are excited to have you on board!'
           sender_email = 'yadav.parishram@gmail.com'  # Replace with your sender email address
           recipient_email = user_email
-          print(sender_email)
+
           # Send email
           send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
           

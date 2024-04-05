@@ -74,7 +74,7 @@ def create_faculty_profile(request):
         
         # message = "Your profile is created successfuly..."
         
-        return Response({"message":"successfull", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({"message":"your account is created successfully", "serializer data":serializer.data}, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

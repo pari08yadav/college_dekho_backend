@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from myapp.models import College, Subject_Teacher, College_Profile
-from .serializers import CollegeSerializer, CollegeProfileSerializer, SubjectTeacherSerializer
+from myapp.models import College, Subject_Teacher, College_Profile, CollegePasswordResetToken
+from .serializers import CollegeSerializer, CollegeProfileSerializer, SubjectTeacherSerializer, CollegePasswordResetTokenSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,6 +9,8 @@ from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
 from django.core.mail import send_mail
+import secrets
+
 
 
 # Creating signup api for college using api_view decorator
@@ -37,6 +39,7 @@ def college_signup(request):
           
     
         return Response({"message":"Your signup is done successfuly", "serialized data":serializer.data}, status=status.HTTP_201_CREATED)
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -111,6 +114,7 @@ def create_college_profile(request):
     
     
     
+    
 # api for college_list using api_view decorator
 @api_view(['GET'])
 @csrf_exempt
@@ -124,6 +128,7 @@ def get_college_list(request):
     
     except College_Profile.DoesNotExist:
         return Response(status=status.HTTP_400_BAD_REQUEST) 
+
 
 
 
@@ -141,6 +146,7 @@ def get_college_profile_data(request, pk):
     
     # else:
     #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     
     
 
@@ -165,3 +171,69 @@ def update_college_profile(request, pk):
     #     return Response(status=status.HTTP_401_UNAUTHORIZED)
     
 
+
+
+# forget_password api using api_view decorator with function based view.
+@api_view(['POST'])
+@csrf_exempt
+def forget_password(request):
+    user_email = request.data.get('email')
+    
+    try:
+        user = College.objects.get(email = user_email)
+        print(user.id)
+    except College.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    # generate token using secret module.
+    token = secrets.token_urlsafe(25)
+    
+    try:
+        CollegePasswordResetToken.objects.create(user=user, token=token)
+    except:
+        return Response({"error":"token is not saved in database."})
+    
+    
+    subject = 'Forget Password Request.'
+    body = f'Please click the following link to reset your password: http://127.0.0.1:8000/reset_password/{token}'
+    sender_email = 'yadav.parishram@gmail.com'  # email id of sender mail
+    recipient_email = user_email
+
+    # Send email
+    send_mail(subject, body, sender_email, [recipient_email], fail_silently=False,)
+    
+    return Response({"message":"reset password mail is send successfully to the given mail."}, status=status.HTTP_201_CREATED)   
+
+
+
+# reset password api using api_view decorator with function based view.
+@api_view(['POST'])
+@csrf_exempt
+def reset_password(request, token):
+    
+    try:
+        new_password = request.data.get('new_password')
+        print(new_password)
+    except:
+        return Response({"error":"Please enter new password..."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        reset_token_object = CollegePasswordResetToken.objects.get(token=token)
+    except:
+        return Response({"error":"user not exits with this token..."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        if reset_token_object.is_expired():
+            return Response({'error': 'Token expired'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        hashed_new_password = make_password(new_password)
+        user = reset_token_object.user
+        user_data = College.objects.get(id=user.id)
+        
+        user_data.password = hashed_new_password
+        user_data.save()
+        reset_token_object.delete()
+        return Response({"message":"your password is reset successfully..."})
+        
+    except CollegePasswordResetToken.DoesNotExist:
+        return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)

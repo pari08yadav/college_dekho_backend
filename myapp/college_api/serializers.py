@@ -28,3 +28,7 @@ class CollegePasswordResetTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollegePasswordResetToken
         fields = "__all__"
+    
+
+        
+    

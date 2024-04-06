@@ -81,4 +81,19 @@ class CollegePasswordResetToken(models.Model):
         return timezone.now() > self.created_at + timedelta(hours=5)
     
     
+class FacultyPasswordResetToken(models.Model):
+    user = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(default=timezone.now)
     
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(hours=5)
+    
+
+class StudentPasswordResetToken(models.Model):
+    user = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(hours=5)

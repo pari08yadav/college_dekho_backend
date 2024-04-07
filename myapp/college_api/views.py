@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from myapp.models import College, Subject_Teacher, College_Profile, CollegePasswordResetToken
-from .serializers import CollegeSerializer, CollegeProfileSerializer, SubjectTeacherSerializer, CollegePasswordResetTokenSerializer
+from myapp.models import College, College_Profile, CollegePasswordResetToken
+from .serializers import CollegeSerializer, CollegeProfileSerializer, CollegePasswordResetTokenSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -72,9 +72,12 @@ def college_login(request):
 # creating a api for collegeProfile 
 @api_view(['POST'])
 @csrf_exempt
-def create_college_profile(request):
+def create_college_profile(request, user_id):
     # if request.user.is_authenticated:
-    serializer = CollegeProfileSerializer(data=request.data)
+    profile_data = request.data
+    profile_data['college'] = user_id       # adding user_id from college model in querydict.
+    serializer = CollegeProfileSerializer(data=profile_data)
+    
     if serializer.is_valid():
         item = serializer.save()
         

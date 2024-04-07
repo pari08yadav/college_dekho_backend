@@ -19,8 +19,9 @@ from myapp.validation import validate_signup_data
 @csrf_exempt
 def faculty_signup(request):
     user_email = request.data.get('email')     #fetching user email.
-    request.data._mutable = True   #with thid code queryset converted into mutable form
+    # request.data._mutable = True   #with thid code queryset converted into mutable form
     data = request.data    #storing all sended data in data variable
+    data = data.copy()    #make a copy of data in data variable.
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
     

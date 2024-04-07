@@ -10,6 +10,8 @@ from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
 from django.core.mail import send_mail
 import secrets
+from myapp.validation import validate_signup_data
+
 
 
 # creating a signup api for faculty using api_view 
@@ -24,7 +26,13 @@ def faculty_signup(request):
     
     serializer = FacultySerializer(data=request.data)
     if serializer.is_valid():
+        
+        # validating username using own validation function.
+        validate_signup_data(serializer.validated_data, Faculty)
+        
+        #saving serializer data to database
         serializer.save()
+        
         if serializer.save():
             # Compose email message
           subject = 'Welcome to Our Platform!'

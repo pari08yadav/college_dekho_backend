@@ -10,7 +10,7 @@ from django.contrib.auth.hashers import make_password
 from cloudinary.uploader import upload
 from django.core.mail import send_mail
 import secrets
-
+from myapp.validation import validate_signup_data
 
 
 # Creating signup api for college using api_view decorator
@@ -22,9 +22,14 @@ def college_signup(request):
     data = request.data    #storing all sended data in data variable
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
-    
     serializer = CollegeSerializer(data=data)
+    
     if serializer.is_valid():
+        
+        # validating username using own validation function.
+        validate_signup_data(serializer.validated_data, College)
+        
+        #saving serializer data to database
         serializer.save()
         
         if serializer.save():
@@ -157,7 +162,6 @@ def update_college_profile(request, pk):
     # if request.user.is_authenticated:
     try:
         profile = College_Profile.objects.get(id=pk)
-        print(profile)
     except College_Profile.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
         
@@ -181,7 +185,7 @@ def forget_password(request):
     
     try:
         user = College.objects.get(email = user_email)
-        print(user.id)
+
     except College.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     
@@ -213,7 +217,7 @@ def reset_password(request, token):
     
     try:
         new_password = request.data.get('new_password')
-        print(new_password)
+    
     except:
         return Response({"error":"Please enter new password..."}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -226,13 +230,13 @@ def reset_password(request, token):
         if reset_token_object.is_expired():
             return Response({'error': 'Token expired'}, status=status.HTTP_400_BAD_REQUEST)
         
-        hashed_new_password = make_password(new_password)
-        user = reset_token_object.user
-        user_data = College.objects.get(id=user.id)
+        hashed_new_password = make_password(new_password)    #hashing password
+        user = reset_token_object.user                      #get user from reset_token_object
+        user_data = College.objects.get(id=user.id)         #get user data using user_id 
         
-        user_data.password = hashed_new_password
-        user_data.save()
-        reset_token_object.delete()
+        user_data.password = hashed_new_password           #saving hashed password to main password
+        user_data.save()                                   #saving new password to password
+        reset_token_object.delete()                       #deleting reset_token_object from token object..
         return Response({"message":"your password is reset successfully..."})
         
     except CollegePasswordResetToken.DoesNotExist:

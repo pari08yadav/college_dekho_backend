@@ -9,6 +9,7 @@ from myapp.pagination import CustomPagination
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 import secrets
+from myapp.validation import validate_signup_data
 
 
 
@@ -25,6 +26,11 @@ def student_signup(request):
     
     serializer = StudentSerializer(data=request.data)
     if serializer.is_valid():
+        
+        # validating username using own validation function.
+        validate_signup_data(serializer.validated_data, Student)
+        
+        #saving serializer data to database
         serializer.save()
         
         if serializer.save():

@@ -11,6 +11,10 @@ from cloudinary.uploader import upload
 from django.core.mail import send_mail
 import secrets
 from myapp.validation import validate_signup_data
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
+
+
 
 
 # Creating signup api for college using api_view decorator
@@ -54,19 +58,24 @@ def college_signup(request):
 @api_view(['POST'])
 @csrf_exempt
 def college_login(request):
-    if not request.user.is_authenticated:
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = College.objects.get(username=username, password=password)
-        if user:
-            return Response({'message': 'Login successful', 'user': CollegeSerializer(user).data}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    # if not request.user.is_authenticated:
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user_obj = College.objects.get(username=username)     #fetch user data from database using username
+    password_stored_in_db = user_obj.password             # storing password from user_obj in variable.
+    match_password = check_password(password,password_stored_in_db)     #matching userpassword and db password 
     
+    # if password matched then allow user logged in successfully..
+    if match_password:
+        return Response({'message': 'Login successful', 'user': CollegeSerializer(user_obj).data}, status=status.HTTP_200_OK)
+    
+    # if user's password not matched then through error...
     else:
-        return Response("You are already Logged In.")
-        
-            
+        return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # else:
+    #     return Response("You are already Logged In.")
+    
 
 
 # creating a api for collegeProfile 
@@ -74,9 +83,9 @@ def college_login(request):
 @csrf_exempt
 def create_college_profile(request, user_id):
     # if request.user.is_authenticated:
-    profile_data = request.data
+    profile_data = request.data           #storing profile data in profile_data variable.
     profile_data['college'] = user_id       # adding user_id from college model in querydict.
-    serializer = CollegeProfileSerializer(data=profile_data)
+    serializer = CollegeProfileSerializer(data=profile_data)     #serializing profile_data.
     
     if serializer.is_valid():
         item = serializer.save()

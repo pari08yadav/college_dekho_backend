@@ -25,7 +25,7 @@ def student_signup(request):
     hashed_password = make_password(data.get('password'))  # hashing password
     data['password'] = hashed_password         #updating old password with hashed password
     
-    serializer = StudentSerializer(data=request.data)
+    serializer = StudentSerializer(data=data)
     if serializer.is_valid():
         
         # validating username using own validation function.
